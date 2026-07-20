@@ -9,6 +9,16 @@ export default function Plans() {
     const [loader, setLoader] = useState(null)
     const navigate = useNavigate()
     const [processing, setProcessing] = useState(false)
+    async function handlePlan(amount, planId) {
+        console.log("Plan Id :", planId);
+        const res = await fetch("http://localhost:4000/create-order", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(planId)
+        })
+        const data = await res.json()
+        console.log("Order Data :", data);
+    }
 
     return (
         <>
@@ -43,7 +53,7 @@ export default function Plans() {
                                     <span>/month</span>
                                 </div>
 
-                                <button className="plan-btn" onClick={() => { handlePlans(plan.amount, plan.id) }}>
+                                <button className="plan-btn" onClick={() => { handlePlan(plan.amount, plan.id) }}>
                                     {plan.amount === loader ? "loading..." : "Get Started"}
                                 </button>
 
