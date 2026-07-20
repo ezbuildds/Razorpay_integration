@@ -16,14 +16,6 @@ export default function Navbar() {
           </span>
         </div>
       </div>
-
-      {/* Desktop Menu */}
-      <ul className={styles.desktopMenu}>
-        {/* <li>
-          <a href="#">Home</a>
-        </li> */}
-      </ul>
-
       <div className={styles.navActions}>
         <button className={styles.proBtn}>Unlock Pro</button>
       </div>
