@@ -1,10 +1,12 @@
 import express from 'express'
+import cors from 'cors'
 import 'dotenv/config'
 import dbConnection from './config/db.js'
 import createOrder from './controller/createOrder.js'
 const PORT = process.env.PORT || 8000
 
 const app = express()
+app.use(cors())
 app.use(express.json())
 
 dbConnection()

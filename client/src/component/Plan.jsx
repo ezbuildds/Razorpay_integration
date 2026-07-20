@@ -11,10 +11,10 @@ export default function Plans() {
     const [processing, setProcessing] = useState(false)
     async function handlePlan(amount, planId) {
         console.log("Plan Id :", planId);
-        const res = await fetch("http://localhost:4000/create-order", {
+        const res = await fetch("http://localhost:5000/create-order", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(planId)
+            body: JSON.stringify({planId })
         })
         const data = await res.json()
         console.log("Order Data :", data);
