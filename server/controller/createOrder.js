@@ -1,6 +1,7 @@
 
 import dbConnection from "../config/db.js";
 import razorpayInstence from "../config/razorpayInstence.js";
+import 'dotenv/config'
 import { planData } from "../constant/planData.js";
 
 export default async function createOrder(req, res) {
@@ -10,7 +11,7 @@ export default async function createOrder(req, res) {
         if (!planId) {
             return res.status(400).send({
                 success: false,
-                message: "Invalid"
+                message: "Invalid request"
             })
         }
         const planDetail = planData[planId]
@@ -32,7 +33,7 @@ export default async function createOrder(req, res) {
         if (!order) {
             return res.status.send({
                 success: false,
-                message: "Unable to create payment order"
+                message: "Unable to create payment order. Please try again"
             })
         }
 
@@ -53,8 +54,11 @@ export default async function createOrder(req, res) {
             message: "Order created successfully",
             orderData: {
                 amount: order.amount,
-                razorpayOrderId: order.id
-            }
+                razorpayOrderId: order.id,
+                currency: order.currency,
+                receipt: order.receipt
+            },
+            key: process.env.RAZORPAY_API_KEY
         })
     } catch (error) {
         console.log(error);
