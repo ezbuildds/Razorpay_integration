@@ -14,10 +14,33 @@ export default function Plans() {
         const res = await fetch("http://localhost:5000/create-order", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({planId })
+            body: JSON.stringify({ planId })
         })
         const data = await res.json()
         console.log("Order Data :", data);
+
+        const options = {
+            key: data.key,
+            amount: data.orderData.amount,
+            currency: data.orderData.currency,
+            name: 'zyvix.ai',
+            description: 'Test Transaction',
+            order_id: data.orderData.razorpayOrderId,
+            handler: function (res) {
+                console.log('Handler res :', res);
+            },
+            prefill: {
+                name: 'Manu Patel',
+                email: 'ezbuildds@gmail.com',
+                contact: '8279966018'
+            },
+            theme: {
+                color: "green"
+            },
+        };
+        setProcessing(true)
+        const rzp = new Razorpay(options);
+        rzp.open();
     }
 
     return (
