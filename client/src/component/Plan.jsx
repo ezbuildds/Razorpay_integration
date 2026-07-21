@@ -26,8 +26,15 @@ export default function Plans() {
             name: 'zyvix.ai',
             description: 'Test Transaction',
             order_id: data.orderData.razorpayOrderId,
-            handler: function (res) {
+            handler: async function (res) {
                 console.log('Handler res :', res);
+                const verification = await fetch("http://localhost:5000/verify-payment", {
+                    method: 'POST',
+                    headers: { "Content-Type": 'application/json' },
+                    body: JSON.stringify(res)
+                })
+                const verificationRes = await verification.json()
+                console.log("Verification res :", verificationRes);
             },
             prefill: {
                 name: 'Manu Patel',

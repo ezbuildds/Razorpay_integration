@@ -3,6 +3,7 @@ import cors from 'cors'
 import 'dotenv/config'
 import dbConnection from './config/db.js'
 import createOrder from './controller/createOrder.js'
+import verifyPayment from './controller/verifyPayment.js'
 const PORT = process.env.PORT || 8000
 
 const app = express()
@@ -19,6 +20,7 @@ app.get("/", async (req, res) => {
 // Razorpay Payment Api
 
 app.post("/create-order", createOrder)
+app.post("/verify-payment",verifyPayment)
 
 
 app.listen(PORT, () => {
