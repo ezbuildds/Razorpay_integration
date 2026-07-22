@@ -10,67 +10,90 @@ export default function Plans() {
     const navigate = useNavigate()
     const [processing, setProcessing] = useState(false)
     async function handlePlan(amount, planId) {
-        console.log("Plan Id :", planId);
-        const res = await fetch("http://localhost:5000/create-order", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ planId })
-        })
-        const data = await res.json()
-        console.log("Order Data :", data);
-
-        const options = {
-            key: data.key,
-            amount: data.orderData.amount,
-            currency: data.orderData.currency,
-            name: 'zyvix.ai',
-            description: 'Test Transaction',
-            order_id: data.orderData.razorpayOrderId,
-            handler: async function (res) {
-                console.log('Handler res :', res);
-                const verification = await fetch("http://localhost:5000/verify-payment", {
-                    method: 'POST',
-                    headers: { "Content-Type": 'application/json' },
-                    body: JSON.stringify(res)
-                })
-                const verificationRes = await verification.json()
-                console.log("Verification res :", verificationRes);
-            },
-            modal: {
-                ondismiss: async function () {
-                    const cancel = await fetch("http://localhost:5000/cancel-payment", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ razorpayOrderId: data.orderData.razorpayOrderId })
-                    })
-                    const cancelRes = await cancel.json()
-                    console.log("Responce form camcel api :", cancelRes);
-
-                }
-            },
-            prefill: {
-                name: 'Manu Patel',
-                email: 'ezbuildds@gmail.com',
-                contact: '8279966018'
-            },
-            theme: {
-                color: "green"
-            },
-        };
-        setProcessing(true)
-        const rzp = new Razorpay(options);
-        rzp.on("payment.failed", async (res) => {
-            console.log("Failed event res :", res)
-            const failed = await fetch("http://localhost:5000/failed-payment", {
+        try {
+            console.log("Plan Id :", planId);
+            const res = await fetch("http://localhost:5000/create-order", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ razorpayOrderId: data.orderData.razorpayOrderId, error: res.error.description })
+                body: JSON.stringify({ planId })
             })
-            const failedRes = await failed.json()
-            console.log("Failed api res :", failedRes);
+            const data = await res.json()
+            console.log("Order Data :", data);
 
-        })
-        rzp.open();
+            const options = {
+                key: data.key,
+                amount: data.orderData.amount,
+                currency: data.orderData.currency,
+                name: 'zyvix.ai',
+                description: 'Test Transaction',
+                order_id: data.orderData.razorpayOrderId,
+                handler: async function (res) {
+                    console.log('Handler res :', res);
+                    try {
+                        const verification = await fetch("http://localhost:5000/verify-payment", {
+                            method: 'POST',
+                            headers: { "Content-Type": 'application/json' },
+                            body: JSON.stringify(res)
+                        })
+                        const verificationRes = await verification.json()
+                        console.log(verificationRes);
+
+                        if (verificationRes.success) {
+                            navigate(`/payment/success/${data.orderData.razorpayOrderId}`)
+                        }
+
+                    } catch (error) {
+                        console.log(error);
+                        navigate(`/payment/failed/${data.orderData.razorpayOrderId}`)
+                    }
+                },
+                modal: {
+                    ondismiss: async function () {
+                        try {
+                            const cancel = await fetch("http://localhost:5000/cancel-payment", {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({ razorpayOrderId: data.orderData.razorpayOrderId })
+                            })
+                            const cancelRes = await cancel.json()
+
+                        } catch (error) {
+                            console.log(error);
+                            navigate(`/payment/failed/${data.orderData.razorpayOrderId}`)
+                        }
+                    }
+                },
+                prefill: {
+                    name: 'Manu Patel',
+                    email: 'ezbuildds@gmail.com',
+                    contact: '8279966018'
+                },
+                theme: {
+                    color: "green"
+                },
+            };
+            setProcessing(true)
+            const rzp = new Razorpay(options);
+            rzp.on("payment.failed", async (res) => {
+                try {
+                    console.log("Failed event res :", res)
+                    const failed = await fetch("http://localhost:5000/failed-payment", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ razorpayOrderId: data.orderData.razorpayOrderId, error: res.error.description })
+                    })
+                    const failedRes = await failed.json()
+
+                } catch (error) {
+                    console.log(error);
+                    navigate(`/payment/failed/${data.orderData.razorpayOrderId}`)
+                }
+
+            })
+            rzp.open();
+        } catch (error) {
+            console.log(error);
+        }
     }
 
     return (

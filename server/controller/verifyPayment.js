@@ -6,7 +6,7 @@ export default async function verifyPayment(req, res) {
         const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body
         if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
             return res.status(400).send({
-                status: false,
+                success: false,
                 message: "Missing required payment verification details."
             })
         }
@@ -23,7 +23,7 @@ export default async function verifyPayment(req, res) {
                     }
                 })
             return res.status(400).send({
-                status: false,
+                success: false,
                 message: "Invalid payment signature"
             })
         }
@@ -32,13 +32,13 @@ export default async function verifyPayment(req, res) {
         const payment = await db.collection("transaction").findOne({ razorpayOrderId: razorpay_order_id })
         if (!payment) {
             return res.status(404).send({
-                status: false,
+                success: false,
                 message: "Payment verification could not be completed."
             })
         }
         if (payment.status === "success") {
             return res.status(200).send({
-                status: true,
+                success: true,
                 message: "Payment already verified"
             })
         }
@@ -54,13 +54,13 @@ export default async function verifyPayment(req, res) {
                 }
             })
         return res.status(200).send({
-            status: true,
+            success: true,
             message: "Payment verification success"
         })
     } catch (error) {
         console.log(error);
         return res.status(500).send({
-            status: true,
+            success: false,
             message: "Internal server error"
         })
     }
