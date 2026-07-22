@@ -36,6 +36,18 @@ export default function Plans() {
                 const verificationRes = await verification.json()
                 console.log("Verification res :", verificationRes);
             },
+            modal: {
+                ondismiss: async function () {
+                    const cancel = await fetch("http://localhost:5000/cancel-payment", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ razorpayOrderId: data.orderData.razorpayOrderId })
+                    })
+                    const cancelRes = await cancel.json()
+                    console.log("Responce form camcel api :", cancelRes);
+
+                }
+            },
             prefill: {
                 name: 'Manu Patel',
                 email: 'ezbuildds@gmail.com',

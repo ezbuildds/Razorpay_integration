@@ -43,6 +43,7 @@ export default async function verifyPayment(req, res) {
             })
         }
 
+        //Update db after verification
         await db.collection("transaction").updateOne({ razorpayOrderId: razorpay_order_id },
             {
                 $set: {
