@@ -5,6 +5,7 @@ import dbConnection from './config/db.js'
 import createOrder from './controller/createOrder.js'
 import verifyPayment from './controller/verifyPayment.js'
 import cancelPayment from './controller/cancelPayment.js'
+import failedPayment from './controller/failedPayment.js'
 const PORT = process.env.PORT || 8000
 
 const app = express()
@@ -23,6 +24,7 @@ app.get("/", async (req, res) => {
 app.post("/create-order", createOrder)
 app.post("/verify-payment",verifyPayment)
 app.post("/cancel-payment",cancelPayment)
+app.post("/failed-payment",failedPayment)
 
 
 app.listen(PORT, () => {

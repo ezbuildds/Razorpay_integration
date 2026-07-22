@@ -59,6 +59,17 @@ export default function Plans() {
         };
         setProcessing(true)
         const rzp = new Razorpay(options);
+        rzp.on("payment.failed", async (res) => {
+            console.log("Failed event res :", res)
+            const failed = await fetch("http://localhost:5000/failed-payment", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ razorpayOrderId: data.orderData.razorpayOrderId, error: res.error.description })
+            })
+            const failedRes = await failed.json()
+            console.log("Failed api res :", failedRes);
+
+        })
         rzp.open();
     }
 
